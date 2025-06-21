@@ -19,7 +19,7 @@ export function VisualSection() {
       title: "Smooth Dashboard UI",
       description: "Intuitive interface for managing your preorders",
       icon: Monitor,
-      image: "/placeholder.svg?height=300&width=400",
+      image: "/dash.jpg?height=300&width=400",
       gradient: "from-blue-500 to-cyan-600",
     },
     {
