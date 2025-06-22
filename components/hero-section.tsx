@@ -5,6 +5,7 @@ import { Bot, Zap, Shield, TrendingDown } from "lucide-react"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { PreorderFormDialog } from "@/components/preorder-form-dialog"
+import { UserCounter } from "./user-counter"
 
 export function HeroSection() {
   const [isMobile, setIsMobile] = useState(false)
@@ -135,8 +136,7 @@ export function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: isMobile ? 0.3 : 0.6, delay: isMobile ? 0.3 : 0.7 }}
           >
-            Join Africa's smartest preorder network. Our AI agents connect you with genuine factory suppliers of
-            clothes, shoes, perfumes, jewelry, housewares, and more.
+            Join Africa's smartest preorder network. Our AI agents connect you with genuine factory suppliers of clothes, shoes, perfume, jewelry, housewares, kitchenwares, musical accessories like drum sticks, tambourines, and more
           </motion.p>
 
           <motion.div
@@ -204,6 +204,10 @@ export function HeroSection() {
         transition={{ duration: 0.8, delay: 1.5 }}
       >
         <div className="max-w-7xl mx-auto text-center">
+        <UserCounter
+            className="order-2 sm:order-1"
+            duration={240000} // 4 minutes (240 seconds)
+          />
           <p className="text-xs sm:text-sm md:text-base font-semibold leading-tight">
             ⚠️ Limited Slots Open for Serious Buyers - We only approve 300 preorders monthly to maintain quality.{" "}
             <span className="underline">Don't miss out. Submit your request now.</span>

@@ -53,7 +53,7 @@ export function HowItWorksSection() {
           viewport={{ once: true }}
         >
           <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r from-blue-800 to-indigo-900 bg-clip-text text-transparent mb-3 sm:mb-4 md:mb-6 px-2">
-            📊 How It Works
+            How It Works
           </h2>
           <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4 sm:px-6">
             Get connected to verified factory suppliers in just 3 simple steps with our AI-powered sourcing network.

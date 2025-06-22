@@ -25,6 +25,8 @@ export function Footer() {
         { name: "Jewelry & Accessories", href: "#" },
         { name: "Perfumes & Cosmetics", href: "#" },
         { name: "Housewares & Electronics", href: "#" },
+        { name: "Musical Accessories ", href: "#" },
+        { name: "Kitchenwares ", href: "#" },
       ],
     },
     {
@@ -213,7 +215,7 @@ export function Footer() {
           viewport={{ once: true }}
         >
           <p className="leading-relaxed text-xs sm:text-sm md:text-base px-2">
-            &copy; 2024 Fusion AI Preorder Network. All rights reserved. | Privacy Policy | Terms of Service | AI Ethics
+            &copy; 2025 Fusion AI Preorder Network. All rights reserved. | Privacy Policy | Terms of Service | AI Ethics
           </p>
         </motion.div>
       </div>
