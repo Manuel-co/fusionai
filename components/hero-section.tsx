@@ -210,7 +210,11 @@ export function HeroSection() {
           />
           <p className="text-xs sm:text-sm md:text-base font-semibold leading-tight">
             ⚠️ Limited Slots Open for Serious Buyers - We only approve 300 preorders monthly to maintain quality.{" "}
-            <span className="underline">Don't miss out. Submit your request now.</span>
+            <PreorderFormDialog>
+              <span className="underline cursor-pointer hover:text-cyan-300 transition-colors duration-200">
+                Don't miss out. Submit your request now.
+              </span>
+            </PreorderFormDialog>
           </p>
         </div>
       </motion.div>
