@@ -17,87 +17,38 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { motion } from "framer-motion"
-import { Zap, Bot, Users, Target, Shirt, Gem, AlertCircle } from "lucide-react"
-import { Formik, Form, Field, ErrorMessage } from "formik"
-import * as Yup from "yup"
+import { Zap, Bot, Users, Target, Shirt, Gem } from "lucide-react"
 
 interface PreorderFormDialogProps {
   children: React.ReactNode
 }
 
-interface FormValues {
-  fullName: string
-  email: string
-  phone: string
-  whatsapp: string
-  products: string[]
-  quantityRange: string
-  businessType: string
-}
-
-const validationSchema = Yup.object({
-  fullName: Yup.string()
-    .min(2, "Full name must be at least 2 characters")
-    .max(100, "Full name must be less than 100 characters")
-    .matches(/^[a-zA-Z\s]+$/, "Full name can only contain letters and spaces")
-    .required("Full name is required"),
-
-  email: Yup.string().email("Please enter a valid email address").required("Email address is required"),
-
-  phone: Yup.string()
-    .matches(/^[+]?[1-9][\d]{0,15}$/, "Please enter a valid phone number")
-    .min(10, "Phone number must be at least 10 digits")
-    .required("Phone number is required"),
-
-  whatsapp: Yup.string()
-    .matches(/^[+]?[1-9][\d]{0,15}$/, "Please enter a valid WhatsApp number")
-    .min(10, "WhatsApp number must be at least 10 digits")
-    .required("WhatsApp number is required"),
-
-  products: Yup.array()
-    .of(Yup.string())
-    .min(1, "Please select at least one product category")
-    .required("Product selection is required"),
-
-  quantityRange: Yup.string(),
-
-  businessType: Yup.string()
-    .min(2, "Business type must be at least 2 characters")
-    .required("Business type is required"),
-})
-
 export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
+  const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitted, setIsSubmitted] = useState(false)
-
-  const initialValues: FormValues = {
+  const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     phone: "",
     whatsapp: "",
-    products: [],
+    products: [] as string[],
     quantityRange: "",
     businessType: "",
-  }
+  })
 
-  const handleSubmit = async (values: FormValues, { setSubmitting }: any) => {
-    try {
-      // Simulate form submission
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    // Simulate form submission
+    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setIsSubmitted(true)
 
-      console.log("Form submitted:", values)
-      setIsSubmitted(true)
-
-      // Close dialog after 3 seconds
-      setTimeout(() => {
-        setIsOpen(false)
-        setIsSubmitted(false)
-        setSubmitting(false)
-      }, 3000)
-    } catch (error) {
-      console.error("Form submission error:", error)
-      setSubmitting(false)
-    }
+    // Close dialog after 3 seconds
+    setTimeout(() => {
+      setIsOpen(false)
+      setIsSubmitted(false)
+      setCurrentStep(1)
+    }, 3000)
   }
 
   const productOptions = [
@@ -118,10 +69,18 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
     { value: "1000+", label: "1,000+ units" },
   ]
 
+  const nextStep = () => {
+    if (currentStep < 3) setCurrentStep(currentStep + 1)
+  }
+
+  const prevStep = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1)
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-white border-0 shadow-2xl">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto glassmorphism-dark border-0 shadow-2xl">
         {!isSubmitted ? (
           <>
             <DialogHeader className="text-center pb-6">
@@ -133,289 +92,268 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
               >
                 <Bot className="w-8 h-8 text-white" />
               </motion.div>
-              <DialogTitle className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-800 to-indigo-900 bg-clip-text text-transparent">
+              <DialogTitle className="text-2xl md:text-3xl font-bold gradient-text">
                 Get Exclusive Access Now
               </DialogTitle>
-              <DialogDescription className="text-gray-600 text-base md:text-lg leading-relaxed">
+              <DialogDescription className="text-gray-300 text-base md:text-lg leading-relaxed">
                 Join Africa's smartest preorder network and get connected to verified factory suppliers with AI-powered
                 sourcing.
               </DialogDescription>
+
+              {/* Progress Indicator */}
+              <div className="flex justify-center gap-2 mt-4">
+                {[1, 2, 3].map((step) => (
+                  <div
+                    key={step}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                      step <= currentStep ? "bg-gradient-to-r from-cyan-500 to-blue-600" : "bg-gray-600"
+                    }`}
+                  />
+                ))}
+              </div>
             </DialogHeader>
 
-            <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
-              {({ isSubmitting, setFieldValue, values, errors, touched }) => (
-                <Form className="space-y-6">
-                  {/* Personal Information */}
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Step 1: Personal Information */}
+              {currentStep === 1 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Personal Information</h3>
+
                   <div className="space-y-2">
-                    <Label htmlFor="fullName" className="text-sm font-medium text-slate-900">
+                    <Label htmlFor="fullName" className="text-sm font-medium text-gray-200">
                       Full Name *
                     </Label>
-                    <Field
-                      as={Input}
+                    <Input
                       id="fullName"
-                      name="fullName"
-                      className={`border-2 rounded-xl transition-colors duration-200 ${
-                        errors.fullName && touched.fullName
-                          ? "border-red-500 focus:border-red-500"
-                          : "border-gray-200 focus:border-cyan-500"
-                      }`}
+                      value={formData.fullName}
+                      onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                      className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
                       placeholder="Enter your full name"
+                      required
                     />
-                    <ErrorMessage name="fullName">
-                      {(msg) => (
-                        <motion.div
-                          className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <AlertCircle className="w-4 h-4" />
-                          {msg}
-                        </motion.div>
-                      )}
-                    </ErrorMessage>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-slate-900">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-200">
                       Email Address *
                     </Label>
-                    <Field
-                      as={Input}
+                    <Input
                       id="email"
-                      name="email"
                       type="email"
-                      className={`border-2 rounded-xl transition-colors duration-200 ${
-                        errors.email && touched.email
-                          ? "border-red-500 focus:border-red-500"
-                          : "border-gray-200 focus:border-cyan-500"
-                      }`}
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
                       placeholder="your.email@example.com"
+                      required
                     />
-                    <ErrorMessage name="email">
-                      {(msg) => (
-                        <motion.div
-                          className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <AlertCircle className="w-4 h-4" />
-                          {msg}
-                        </motion.div>
-                      )}
-                    </ErrorMessage>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-sm font-medium text-slate-900">
+                      <Label htmlFor="phone" className="text-sm font-medium text-gray-200">
                         Phone Number *
                       </Label>
-                      <Field
-                        as={Input}
+                      <Input
                         id="phone"
-                        name="phone"
                         type="tel"
-                        className={`border-2 rounded-xl transition-colors duration-200 ${
-                          errors.phone && touched.phone
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-200 focus:border-cyan-500"
-                        }`}
+                        value={formData.phone}
+                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
                         placeholder="+234 812 345 6789"
+                        required
                       />
-                      <ErrorMessage name="phone">
-                        {(msg) => (
-                          <motion.div
-                            className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <AlertCircle className="w-4 h-4" />
-                            {msg}
-                          </motion.div>
-                        )}
-                      </ErrorMessage>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="whatsapp" className="text-sm font-medium text-slate-900">
+                      <Label htmlFor="whatsapp" className="text-sm font-medium text-gray-200">
                         WhatsApp Number *
                       </Label>
-                      <Field
-                        as={Input}
+                      <Input
                         id="whatsapp"
-                        name="whatsapp"
                         type="tel"
-                        className={`border-2 rounded-xl transition-colors duration-200 ${
-                          errors.whatsapp && touched.whatsapp
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-200 focus:border-cyan-500"
-                        }`}
+                        value={formData.whatsapp}
+                        onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                        className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
                         placeholder="+234 812 345 6789"
+                        required
                       />
-                      <ErrorMessage name="whatsapp">
-                        {(msg) => (
-                          <motion.div
-                            className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <AlertCircle className="w-4 h-4" />
-                            {msg}
-                          </motion.div>
-                        )}
-                      </ErrorMessage>
                     </div>
                   </div>
+                </motion.div>
+              )}
 
-                  {/* Product Selection */}
+              {/* Step 2: Product Selection */}
+              {currentStep === 2 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Product Preferences</h3>
+
                   <div className="space-y-3">
-                    <Label className="text-sm font-medium text-slate-900">
+                    <Label className="text-sm font-medium text-gray-200">
                       What kind of products are you looking to preorder? *
                     </Label>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                       {productOptions.map((product) => (
                         <div key={product.value} className="flex items-center space-x-2">
-                          <Field name="products">
-                            {({ field }: any) => (
-                              <Checkbox
-                                id={product.value}
-                                checked={field.value.includes(product.value)}
-                                onCheckedChange={(checked) => {
-                                  if (checked) {
-                                    setFieldValue("products", [...field.value, product.value])
-                                  } else {
-                                    setFieldValue(
-                                      "products",
-                                      field.value.filter((item: string) => item !== product.value),
-                                    )
-                                  }
-                                }}
-                                className="border-2 border-gray-300 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
-                              />
-                            )}
-                          </Field>
-                          <Label htmlFor={product.value} className="text-sm text-gray-700 flex items-center gap-2">
-                            <product.icon className="w-4 h-4 text-cyan-600" />
+                          <Checkbox
+                            id={product.value}
+                            checked={formData.products.includes(product.value)}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                setFormData({
+                                  ...formData,
+                                  products: [...formData.products, product.value],
+                                })
+                              } else {
+                                setFormData({
+                                  ...formData,
+                                  products: formData.products.filter((item) => item !== product.value),
+                                })
+                              }
+                            }}
+                            className="border-2 border-gray-400 data-[state=checked]:bg-cyan-500 data-[state=checked]:border-cyan-500"
+                          />
+                          <Label htmlFor={product.value} className="text-sm text-gray-200 flex items-center gap-2">
+                            <product.icon className="w-4 h-4 text-cyan-400" />
                             {product.label}
                           </Label>
                         </div>
                       ))}
                     </div>
-                    <ErrorMessage name="products">
-                      {(msg) => (
-                        <motion.div
-                          className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <AlertCircle className="w-4 h-4" />
-                          {msg}
-                        </motion.div>
-                      )}
-                    </ErrorMessage>
                   </div>
 
-                  {/* Business Information */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="quantityRange" className="text-sm font-medium text-slate-900">
-                        Preferred Quantity Range (Optional)
-                      </Label>
-                      <Select
-                        value={values.quantityRange}
-                        onValueChange={(value) => setFieldValue("quantityRange", value)}
-                      >
-                        <SelectTrigger className="border-2 border-gray-200 focus:border-cyan-500 rounded-xl">
-                          <SelectValue placeholder="Select quantity range" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {quantityRanges.map((range) => (
-                            <SelectItem key={range.value} value={range.value}>
-                              {range.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="businessType" className="text-sm font-medium text-slate-900">
-                        Your Business Type *
-                      </Label>
-                      <Field
-                        as={Input}
-                        id="businessType"
-                        name="businessType"
-                        className={`border-2 rounded-xl transition-colors duration-200 ${
-                          errors.businessType && touched.businessType
-                            ? "border-red-500 focus:border-red-500"
-                            : "border-gray-200 focus:border-cyan-500"
-                        }`}
-                        placeholder="e.g., reseller, boutique owner, personal shopper"
-                      />
-                      <ErrorMessage name="businessType">
-                        {(msg) => (
-                          <motion.div
-                            className="flex items-center gap-1 text-red-500 text-sm mt-1"
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <AlertCircle className="w-4 h-4" />
-                            {msg}
-                          </motion.div>
-                        )}
-                      </ErrorMessage>
-                    </div>
-                  </div>
-
-                  {/* Submit Button */}
-                  <div className="pt-6">
-                    <Button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                  <div className="space-y-2">
+                    <Label htmlFor="quantityRange" className="text-sm font-medium text-gray-200">
+                      Preferred Quantity Range
+                    </Label>
+                    <Select
+                      value={formData.quantityRange}
+                      onValueChange={(value) => setFormData({ ...formData, quantityRange: value })}
                     >
-                      {isSubmitting ? (
-                        <div className="flex items-center gap-2">
-                          <motion.div
-                            className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
-                          />
-                          Processing Request...
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <Zap className="w-5 h-5" />🔓 Unlock My Deals Now
-                        </div>
-                      )}
-                    </Button>
+                      <SelectTrigger className="glassmorphism border-white/20 text-white focus:border-cyan-400">
+                        <SelectValue placeholder="Select quantity range" />
+                      </SelectTrigger>
+                      <SelectContent className="glassmorphism-dark border-white/20">
+                        {quantityRanges.map((range) => (
+                          <SelectItem key={range.value} value={range.value} className="text-white">
+                            {range.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 3: Business Information */}
+              {currentStep === 3 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="space-y-4"
+                >
+                  <h3 className="text-lg font-semibold text-white mb-4">Business Information</h3>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="businessType" className="text-sm font-medium text-gray-200">
+                      Your Business Type *
+                    </Label>
+                    <Input
+                      id="businessType"
+                      value={formData.businessType}
+                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                      className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
+                      placeholder="e.g., reseller, boutique owner, personal shopper"
+                      required
+                    />
                   </div>
 
-                  {/* Trust Indicators */}
-                  <div className="pt-4 border-t border-gray-200">
-                    <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-1">
-                        <Bot className="w-4 h-4 text-cyan-500" />
-                        <span>AI-Powered Sourcing</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="w-4 h-4 text-cyan-500" />
-                        <span>Verified Suppliers</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Target className="w-4 h-4 text-cyan-500" />
-                        <span>Factory Direct</span>
-                      </div>
+                  {/* Summary */}
+                  <div className="glassmorphism rounded-xl p-4 border border-white/10">
+                    <h4 className="text-sm font-semibold text-white mb-3">Summary</h4>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <p>
+                        <strong>Name:</strong> {formData.fullName}
+                      </p>
+                      <p>
+                        <strong>Email:</strong> {formData.email}
+                      </p>
+                      <p>
+                        <strong>Products:</strong> {formData.products.join(", ")}
+                      </p>
+                      <p>
+                        <strong>Business:</strong> {formData.businessType}
+                      </p>
                     </div>
                   </div>
-                </Form>
+                </motion.div>
               )}
-            </Formik>
+
+              {/* Navigation Buttons */}
+              <div className="flex justify-between pt-6">
+                {currentStep > 1 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={prevStep}
+                    className="glassmorphism border-white/20 text-white hover:bg-white/10"
+                  >
+                    Previous
+                  </Button>
+                )}
+
+                {currentStep < 3 ? (
+                  <Button
+                    type="button"
+                    onClick={nextStep}
+                    className="ml-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 morph-button"
+                    disabled={
+                      (currentStep === 1 &&
+                        (!formData.fullName || !formData.email || !formData.phone || !formData.whatsapp)) ||
+                      (currentStep === 2 && formData.products.length === 0)
+                    }
+                  >
+                    Next Step
+                  </Button>
+                ) : (
+                  <Button
+                    type="submit"
+                    className="ml-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 morph-button"
+                    disabled={!formData.businessType}
+                  >
+                    <Zap className="w-4 h-4 mr-2" />
+                    Submit Request
+                  </Button>
+                )}
+              </div>
+
+              {/* Trust Indicators */}
+              <div className="pt-4 border-t border-gray-600/50">
+                <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-400">
+                  <div className="flex items-center gap-1">
+                    <Bot className="w-4 h-4 text-cyan-400" />
+                    <span>AI-Powered Sourcing</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Users className="w-4 h-4 text-cyan-400" />
+                    <span>Verified Suppliers</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Target className="w-4 h-4 text-cyan-400" />
+                    <span>Factory Direct</span>
+                  </div>
+                </div>
+              </div>
+            </form>
           </>
         ) : (
           /* Success State */
@@ -440,23 +378,41 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                 ✓
               </motion.div>
             </motion.div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">Welcome to Fusion AI!</h3>
-            <p className="text-gray-600 mb-6 leading-relaxed">
+            <h3 className="text-2xl font-bold text-white mb-4">Welcome to Fusion AI!</h3>
+            <p className="text-gray-300 mb-6 leading-relaxed">
               Your request has been submitted successfully. Our AI agents are now searching for the best factory
               suppliers that match your requirements.
             </p>
-            <div className="bg-cyan-50 border border-cyan-200 rounded-xl p-4 mb-6">
-              <p className="text-cyan-800 text-sm">
+            <div className="glassmorphism rounded-xl p-4 mb-6 border border-cyan-500/30">
+              <p className="text-cyan-300 text-sm">
                 <strong>What's Next?</strong> We'll contact you within 24 hours with verified supplier matches and
                 exclusive preorder opportunities.
               </p>
             </div>
-            <Button
-              onClick={() => setIsOpen(false)}
-              className="bg-gradient-to-r from-blue-800 to-indigo-900 hover:from-blue-900 hover:to-indigo-800 text-white px-8 py-3 rounded-xl"
-            >
-              Close
-            </Button>
+
+            {/* Confetti Animation */}
+            <div className="absolute inset-0 pointer-events-none">
+              {[...Array(20)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-gradient-to-r from-cyan-400 to-blue-600 rounded-full"
+                  style={{
+                    left: `${Math.random() * 100}%`,
+                    top: `${Math.random() * 100}%`,
+                  }}
+                  animate={{
+                    y: [-20, -100],
+                    rotate: [0, 360],
+                    opacity: [1, 0],
+                  }}
+                  transition={{
+                    duration: 2,
+                    delay: Math.random() * 1,
+                    ease: "easeOut",
+                  }}
+                />
+              ))}
+            </div>
           </motion.div>
         )}
       </DialogContent>
