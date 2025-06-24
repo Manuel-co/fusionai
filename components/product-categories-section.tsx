@@ -60,7 +60,7 @@ export function ProductCategoriesSection() {
       description: "Cookware, utensils, dining accessories",
       icon: Utensils,
       gradient: "from-red-500 to-pink-600",
-      image: "/placeholder.svg?height=200&width=300",
+      image: "/Kitchenwares.jpg?height=200&width=300",
       stats: "400+ Suppliers",
     },
     {

@@ -20,7 +20,7 @@ export function FeaturesSection() {
       description:
         "Streamlined dashboard for tracking orders, managing suppliers, and monitoring deliveries in real-time.",
       icon: Monitor,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "/dash.jpg?height=400&width=600",
       gradient: "from-blue-500 to-cyan-600",
       benefits: ["Real-time tracking", "Order management", "Supplier communication", "Analytics dashboard"],
     },
@@ -29,7 +29,7 @@ export function FeaturesSection() {
       description:
         "Every supplier undergoes rigorous verification to ensure authentic, high-quality products direct from manufacturers.",
       icon: Package,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "/verif.png?height=400&width=600",
       gradient: "from-green-500 to-emerald-600",
       benefits: ["Factory verification", "Quality assurance", "Authentic products", "Direct sourcing"],
     },
@@ -38,7 +38,7 @@ export function FeaturesSection() {
       description:
         "Stay informed with instant updates on your preorders, from confirmation to delivery at your doorstep.",
       icon: CheckCircle,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "/track.png?height=400&width=600",
       gradient: "from-purple-500 to-indigo-600",
       benefits: ["Live updates", "Delivery tracking", "Status notifications", "Timeline visibility"],
     },
@@ -46,7 +46,7 @@ export function FeaturesSection() {
       title: "Trusted Supplier Network",
       description: "Access our curated network of verified suppliers with proven track records and excellent ratings.",
       icon: Award,
-      image: "/placeholder.svg?height=400&width=600",
+      image: "/safe.png?height=400&width=600",
       gradient: "from-orange-500 to-red-600",
       benefits: ["Verified suppliers", "Rating system", "Performance tracking", "Trust badges"],
     },
