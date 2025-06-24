@@ -162,11 +162,11 @@ export function TestimonialsSection() {
             {/* Author info */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <img
+                {/* <img
                   src={testimonials[currentTestimonial].avatar || "/placeholder.svg"}
                   alt={testimonials[currentTestimonial].author}
                   className="w-16 h-16 rounded-full border-2 border-white/20"
-                />
+                /> */}
                 <div>
                   <div className="font-bold text-white text-lg">{testimonials[currentTestimonial].author}</div>
                   <div className="text-slate-300 text-sm">{testimonials[currentTestimonial].business}</div>

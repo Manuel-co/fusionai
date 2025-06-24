@@ -17,22 +17,22 @@ export function ActivityNotification() {
 
   const activities = [
     {
-      message: "Sarah just connected with a verified electronics supplier",
+      message: "Sarah just joined and connected with a verified electronics supplier",
       location: "Kenya",
       icon: Package,
     },
     {
-      message: "Ahmed secured 40% savings on bulk jewelry order",
+      message: "Ahmed joined and secured 40% savings on bulk jewelry order",
       location: "Egypt",
       icon: Users,
     },
     {
-      message: "Fatima found a reliable fashion supplier",
+      message: "Fatima joined and found a reliable fashion supplier",
       location: "Morocco",
       icon: Package,
     },
     {
-      message: "John completed preorder for 500 units",
+      message: "John joined and completed preorder for 500 units",
       location: "Nigeria",
       icon: Users,
     },
