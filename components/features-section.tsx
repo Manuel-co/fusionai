@@ -179,8 +179,8 @@ export function FeaturesSection() {
               >
                 <feature.icon className="w-8 h-8 text-white" />
               </motion.div>
-              <h4 className="text-lg font-bold text-slate-900 mb-2">{feature.title}</h4>
-              <p className="text-slate-600 text-sm">{feature.description}</p>
+              <h4 className="text-lg font-bold text-white mb-2">{feature.title}</h4>
+              <p className="text-white text-sm">{feature.description}</p>
             </motion.div>
           ))}
         </motion.div>
