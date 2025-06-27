@@ -81,16 +81,18 @@ export function FloatingActionButton() {
                         </Button>
                       </PreorderFormDialog>
                     ) : (
-                      <Button
-                        size="icon"
-                        className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.gradient} hover:scale-110 shadow-lg hover:shadow-xl transition-all duration-300`}
-                        onClick={() => {
-                          // Handle chat action
-                          console.log("Opening chat...")
-                        }}
+                      <a
+                        href="https://wa.me/1234567890" // Replace with your WhatsApp number
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
-                        <item.icon className="w-5 h-5 text-white" />
-                      </Button>
+                        <Button
+                          size="icon"
+                          className={`w-12 h-12 rounded-full bg-gradient-to-r ${item.gradient} hover:scale-110 shadow-lg hover:shadow-xl transition-all duration-300`}
+                        >
+                          <item.icon className="w-5 h-5 text-white" />
+                        </Button>
+                      </a>
                     )}
                   </motion.div>
                 ))}

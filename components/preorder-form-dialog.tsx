@@ -35,7 +35,9 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
     products: [] as string[],
     quantityRange: "",
     businessType: "",
+    otherProduct: "",
   })
+  const BUSINESS_TYPE_WORD_LIMIT = 6;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,7 +82,7 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto glassmorphism-dark border-0 shadow-2xl">
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto glassmorphism-dark border-0 shadow-2xl rounded-xl">
         {!isSubmitted ? (
           <>
             <DialogHeader className="text-center pb-6">
@@ -216,6 +218,7 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                                 setFormData({
                                   ...formData,
                                   products: formData.products.filter((item) => item !== product.value),
+                                  ...(product.value === "others" ? { otherProduct: "" } : {}),
                                 })
                               }
                             }}
@@ -228,6 +231,21 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                         </div>
                       ))}
                     </div>
+                    {formData.products.includes("others") && (
+                      <div className="mt-2">
+                        <Label htmlFor="otherProduct" className="text-sm font-medium text-gray-200">
+                          Please specify other product(s):
+                        </Label>
+                        <Input
+                          id="otherProduct"
+                          value={formData.otherProduct}
+                          onChange={e => setFormData({ ...formData, otherProduct: e.target.value })}
+                          className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400 mt-1"
+                          placeholder="Enter other product(s)"
+                          required
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -265,16 +283,27 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="businessType" className="text-sm font-medium text-gray-200">
-                      Your Business Type *
+                      Your Business Type * <span className="text-xs text-gray-400">(max {BUSINESS_TYPE_WORD_LIMIT} words)</span>
                     </Label>
                     <Input
                       id="businessType"
                       value={formData.businessType}
-                      onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
+                      onChange={(e) => {
+                        const words = e.target.value.split(/\s+/).filter(Boolean);
+                        if (words.length <= BUSINESS_TYPE_WORD_LIMIT) {
+                          setFormData({ ...formData, businessType: e.target.value });
+                        } else {
+                          // Only allow up to the word limit
+                          setFormData({ ...formData, businessType: words.slice(0, BUSINESS_TYPE_WORD_LIMIT).join(" ") });
+                        }
+                      }}
                       className="glassmorphism border-white/20 text-white placeholder:text-gray-400 focus:border-cyan-400"
                       placeholder="e.g., reseller, boutique owner, personal shopper"
                       required
                     />
+                    <div className="text-xs text-gray-400 mt-1">
+                      {formData.businessType.trim() ? `${BUSINESS_TYPE_WORD_LIMIT - formData.businessType.trim().split(/\s+/).filter(Boolean).length} words left` : `${BUSINESS_TYPE_WORD_LIMIT} words left`}
+                    </div>
                   </div>
 
                   {/* Summary */}
@@ -305,7 +334,7 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                     type="button"
                     variant="outline"
                     onClick={prevStep}
-                    className="glassmorphism border-white/20 text-white hover:bg-white/10"
+                    className="glassmorphism border-white/20 text-white hover:bg-white/10 rounded-xl"
                   >
                     Previous
                   </Button>

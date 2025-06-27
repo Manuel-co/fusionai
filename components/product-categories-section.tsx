@@ -20,7 +20,7 @@ export function ProductCategoriesSection() {
       description: "Designer wear, casual clothing, traditional attire",
       icon: Shirt,
       gradient: "from-pink-500 to-rose-600",
-      image: "/placeholder.svg?height=200&width=300",
+      image: "/shirt.jpg?height=200&width=300",
       stats: "1000+ Suppliers",
     },
     {
@@ -28,7 +28,7 @@ export function ProductCategoriesSection() {
       description: "Sneakers, formal shoes, sandals, boots",
       icon: Gem,
       gradient: "from-blue-500 to-cyan-600",
-      image: "/placeholder.svg?height=200&width=300",
+      image: "/footwear.png?height=200&width=300",
       stats: "800+ Suppliers",
     },
     {
@@ -36,7 +36,7 @@ export function ProductCategoriesSection() {
       description: "Fragrances, skincare, makeup, beauty products",
       icon: Sparkles,
       gradient: "from-purple-500 to-indigo-600",
-      image: "/placeholder.svg?height=200&width=300",
+      image: "/purf.png?height=200&width=300",
       stats: "600+ Suppliers",
     },
     {
