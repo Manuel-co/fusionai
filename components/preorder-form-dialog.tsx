@@ -17,7 +17,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { motion } from "framer-motion"
-import { Zap, Bot, Users, Target, Shirt, Gem } from "lucide-react"
+import { Zap, Bot, Users, Target, Shirt, Gem, Footprints, ShieldPlus, Factory, SprayCan } from "lucide-react"
+import axiosInstance from "@/utils/axiosInstance"
 
 interface PreorderFormDialogProps {
   children: React.ReactNode
@@ -38,29 +39,113 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
     otherProduct: "",
   })
   const BUSINESS_TYPE_WORD_LIMIT = 6;
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  // Helper function to parse quantity range
+  const parseQuantityRange = (rangeString: string) => {
+    switch (rangeString) {
+      case "1-50":
+        return { min: 1, max: 50 }
+      case "51-100":
+        return { min: 51, max: 100 }
+      case "101-500":
+        return { min: 101, max: 500 }
+      case "501-1000":
+        return { min: 501, max: 1000 }
+      case "1000+":
+        return { min: 1000, max: null }
+      default:
+        return { min: 1, max: 50 }
+    }
+  }
+
+  // Helper function to format products for backend
+  const formatProductsForBackend = (products: string[], otherProduct: string) => {
+    const productMap: { [key: string]: string } = {
+      clothes: "Clothes",
+      shoes: "Shoes", 
+      accessories: "Accessories",
+      perfumes: "Perfumes",
+      jewelry: "Jewelry",
+      housewares: "Housewares",
+      others: otherProduct || "Others"
+    }
+
+    return products.map(product => productMap[product] || product)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
-    setIsSubmitted(true)
+    setLoading(true)
+    setError(null)
+    
+    try {
+      // Transform the form data to match backend API structure
+      const backendPayload = {
+        fullName: formData.fullName,
+        email: formData.email,
+        phoneNumber: formData.phone,
+        whatsappNumber: formData.whatsapp,
+        products: formatProductsForBackend(formData.products, formData.otherProduct),
+        quantityRange: parseQuantityRange(formData.quantityRange),
+        businessType: formData.businessType
+      }
 
-    // Close dialog after 3 seconds
-    setTimeout(() => {
-      setIsOpen(false)
-      setIsSubmitted(false)
-      setCurrentStep(1)
-    }, 3000)
+      console.log('Sending payload:', backendPayload) // Debug log
+
+      const response = await axiosInstance.post("/api/preorder", backendPayload)
+      
+      console.log('Response:', response.data) // Debug log
+      
+      setIsSubmitted(true)
+      
+      // Reset form data
+      setFormData({
+        fullName: "",
+        email: "",
+        phone: "",
+        whatsapp: "",
+        products: [],
+        quantityRange: "",
+        businessType: "",
+        otherProduct: "",
+      })
+      
+      // Close dialog after 5 seconds
+      setTimeout(() => {
+        setIsOpen(false)
+        setIsSubmitted(false)
+        setCurrentStep(1)
+      }, 9000)
+      
+    } catch (err: any) {
+      console.error('Error submitting form:', err) // Debug log
+      
+      // Handle different error scenarios
+      if (err.response) {
+        // Server responded with error status
+        setError(err.response.data?.message || `Server error: ${err.response.status}`)
+      } else if (err.request) {
+        // Request was made but no response received
+        setError("Network error. Please check your connection and try again.")
+      } else {
+        // Something else happened
+        setError("Something went wrong. Please try again.")
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   const productOptions = [
     { value: "clothes", label: "Clothes", icon: Shirt },
-    { value: "shoes", label: "Shoes", icon: Target },
+    { value: "shoes", label: "Shoes", icon: Footprints },
     { value: "accessories", label: "Accessories", icon: Gem },
-    { value: "perfumes", label: "Perfumes", icon: Bot },
+    { value: "perfumes", label: "Perfumes", icon: SprayCan },
     { value: "jewelry", label: "Jewelry", icon: Gem },
     { value: "housewares", label: "Housewares", icon: Users },
-    { value: "others", label: "Others", icon: Target },
+    { value: "others", label: "Others", icon: ShieldPlus },
   ]
 
   const quantityRanges = [
@@ -77,6 +162,23 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
 
   const prevStep = () => {
     if (currentStep > 1) setCurrentStep(currentStep - 1)
+  }
+
+  // Validation helpers
+  const isStep1Valid = () => {
+    return formData.fullName.trim() && 
+           formData.email.trim() && 
+           formData.phone.trim() && 
+           formData.whatsapp.trim()
+  }
+
+  const isStep2Valid = () => {
+    return formData.products.length > 0 && 
+           (!formData.products.includes("others") || formData.otherProduct.trim())
+  }
+
+  const isStep3Valid = () => {
+    return formData.businessType.trim()
   }
 
   return (
@@ -116,6 +218,13 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
             </DialogHeader>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Show error if exists */}
+              {error && (
+                <div className="bg-red-500/20 text-red-300 rounded-lg px-4 py-2 mb-2 text-center">
+                  {error}
+                </div>
+              )}
+
               {/* Step 1: Personal Information */}
               {currentStep === 1 && (
                 <motion.div
@@ -234,7 +343,7 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                     {formData.products.includes("others") && (
                       <div className="mt-2">
                         <Label htmlFor="otherProduct" className="text-sm font-medium text-gray-200">
-                          Please specify other product(s):
+                          Please specify other product(s): *
                         </Label>
                         <Input
                           id="otherProduct"
@@ -250,11 +359,12 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
 
                   <div className="space-y-2">
                     <Label htmlFor="quantityRange" className="text-sm font-medium text-gray-200">
-                      Preferred Quantity Range
+                      Preferred Quantity Range *
                     </Label>
                     <Select
                       value={formData.quantityRange}
                       onValueChange={(value) => setFormData({ ...formData, quantityRange: value })}
+                      required
                     >
                       <SelectTrigger className="glassmorphism border-white/20 text-white focus:border-cyan-400">
                         <SelectValue placeholder="Select quantity range" />
@@ -317,7 +427,10 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                         <strong>Email:</strong> {formData.email}
                       </p>
                       <p>
-                        <strong>Products:</strong> {formData.products.join(", ")}
+                        <strong>Products:</strong> {formatProductsForBackend(formData.products, formData.otherProduct).join(", ")}
+                      </p>
+                      <p>
+                        <strong>Quantity:</strong> {formData.quantityRange}
                       </p>
                       <p>
                         <strong>Business:</strong> {formData.businessType}
@@ -346,9 +459,8 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                     onClick={nextStep}
                     className="ml-auto bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold px-6 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 morph-button"
                     disabled={
-                      (currentStep === 1 &&
-                        (!formData.fullName || !formData.email || !formData.phone || !formData.whatsapp)) ||
-                      (currentStep === 2 && formData.products.length === 0)
+                      (currentStep === 1 && !isStep1Valid()) ||
+                      (currentStep === 2 && !isStep2Valid())
                     }
                   >
                     Next Step
@@ -357,10 +469,16 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                   <Button
                     type="submit"
                     className="ml-auto bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 morph-button"
-                    disabled={!formData.businessType}
+                    disabled={!isStep3Valid() || loading}
                   >
-                    <Zap className="w-4 h-4 mr-2" />
-                    Submit Request
+                    {loading ? (
+                      <span>Submitting...</span>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4 mr-2" />
+                        Submit Request
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
@@ -377,7 +495,7 @@ export function PreorderFormDialog({ children }: PreorderFormDialogProps) {
                     <span>Verified Suppliers</span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <Target className="w-4 h-4 text-cyan-400" />
+                    <Factory className="w-4 h-4 text-cyan-400" />
                     <span>Factory Direct</span>
                   </div>
                 </div>

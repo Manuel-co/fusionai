@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
-import { Shirt, Gem, Sparkles, Music, Home, Utensils, Watch, Palette } from "lucide-react"
+import { Shirt, Gem, Sparkles, Music, Home, Utensils, Watch, Palette, Footprints, SprayCan } from "lucide-react"
 
 export function ProductCategoriesSection() {
   const [isMobile, setIsMobile] = useState(false)
@@ -26,7 +26,7 @@ export function ProductCategoriesSection() {
     {
       name: "Shoes & Footwear",
       description: "Sneakers, formal shoes, sandals, boots",
-      icon: Gem,
+      icon: Footprints,
       gradient: "from-blue-500 to-cyan-600",
       image: "/footwear.png?height=200&width=300",
       stats: "800+ Suppliers",
@@ -34,7 +34,7 @@ export function ProductCategoriesSection() {
     {
       name: "Perfumes & Cosmetics",
       description: "Fragrances, skincare, makeup, beauty products",
-      icon: Sparkles,
+      icon: SprayCan,
       gradient: "from-purple-500 to-indigo-600",
       image: "/purf.png?height=200&width=300",
       stats: "600+ Suppliers",

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { motion } from "framer-motion"
 import { useEffect, useState } from "react"
 import { PreorderFormDialog } from "@/components/preorder-form-dialog"
+import { CurrencyNgn } from "@phosphor-icons/react";
 
 export function Footer() {
   const [isMobile, setIsMobile] = useState(false)
@@ -69,7 +70,7 @@ export function Footer() {
 
   const trustBadges = [
     { icon: Shield, text: "Verified Suppliers" },
-    { icon: DollarSign, text: "Secure Payments" },
+    { icon: CurrencyNgn, text: "Secure Payments" },
     { icon: Clock, text: "Quality Guaranteed" },
   ]
 
